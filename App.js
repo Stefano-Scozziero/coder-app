@@ -1,57 +1,132 @@
-import { TextInput, View, StyleSheet, Text, ImageBackground, Image, Pressable } from 'react-native'
+import { useState } from 'react'
+import { View, StyleSheet, Dimensions, ImageBackground } from 'react-native'
+import uuid from 'react-native-uuid'
+import ModalDeleteTask from './src/components/ModalDeleteTask'
+import AddTask from './src/components/AddTask'
+import ListTasks from './src/components/ListTasks'
+
 
 const App = ()  => {
+
+  const [modalVisible, setModalVisible] = useState(false)
+  const [taskSelected, setTaskSelected] = useState({})
+  const [taskTitle, setTaskTitle] = useState("")
+  const [taskDescription, setTaskDescription] = useState("")
+  const [tasks, setTasks] = useState([])
+  const screenWidth = Dimensions.get('window').width
+
   
+
+  const addTask = () => {
+    const newTask = {
+          id: uuid.v4(),
+          createdAt: new Date().toLocaleString(),
+          updatedAt: new Date().toLocaleString(),
+          completed: false,
+          title: taskTitle,
+          description: taskDescription
+    }
+    setTasks([...tasks, newTask])
+
+    setTaskTitle("0")
+    setTaskDescription("0")
+  }
+
+  const onHandlerTitle = (t) => {
+    //const id = uuid.v4()
+    setTaskTitle(t)
+
+  }
+
+  const onHandlerDescription= (t) => {
+    setTaskDescription(t)
+    
+  }
+
+  const onHandlerModalDelete = (task) => {
+    setTaskSelected(task)
+    setModalVisible(!modalVisible)
+  }
+
+  const deleteTask = () => {
+    setTasks(tasks.filter(task => task.id != taskSelected.id))
+    setModalVisible(!modalVisible)  
+  }
+
+  const updateTaskCompleted = (id) => {
+    setTasks(tasks.map(task => {
+      if (task.id === id) return {...task,...{completed:!task.completed}}
+      return task
+    }))
+    
+  }
+
+  const incrementTitle = () => {
+    let num = parseInt(taskTitle);
+    if (isNaN(num)) {
+        num = 0;
+    }
+    setTaskTitle((num + 1).toString());
+  }
+
+  const decrementTitle = () => {
+    let num = parseInt(taskTitle);
+    if (isNaN(num) || num <= 0) {
+        num = 0;
+    } else {
+        num--;
+    }
+    setTaskTitle(num.toString());
+  }
+
+  const incrementDescription = () => {
+    let num = parseInt(taskDescription);
+    if (isNaN(num)) {
+        num = 0;
+    }
+    setTaskDescription((num + 1).toString());
+  }
+
+  const decrementDescription = () => {
+    let num = parseInt(taskDescription);
+    if (isNaN(num) || num <= 0) {
+        num = 0;
+    } else {
+        num--;
+    }
+    setTaskDescription(num.toString());
+  }
 
   return (
     
-    <ImageBackground source={require('./assets/fondodefinitivo.png')} style={styles.container}>
-      <Image source={require('./assets/logo.png')} style={styles.logo} />
+    <View style={styles.container}>
+        <ImageBackground style={styles.imageContainer} source={require('./assets/fondodefinitivo.png')}>
+          <AddTask 
+            taskTitle = {taskTitle}
+            onHandlerTitle = {onHandlerTitle}
+            taskDescription = {taskDescription}
+            incrementTitle = {incrementTitle}
+            decrementTitle = {decrementTitle}
+            onHandlerDescription = {onHandlerDescription}
+            incrementDescription = {incrementDescription}
+            decrementDescription = {decrementDescription}
+            addTask = {addTask}
+          />
+          <ListTasks 
+            tasks={tasks}
+            onHandlerModalDelete={onHandlerModalDelete}
+            screenWidth={screenWidth}
+            updateTaskCompleted={updateTaskCompleted}
+          />
+          <ModalDeleteTask 
+            modalVisible = {modalVisible}
+            taskSelected = {taskSelected}
+            onHandlerModalDelete = {onHandlerModalDelete}
+            deleteTask = {deleteTask}
+          />
+        </ImageBackground>   
+    </View>
       
-      <Text style={styles.text}>PRODESCO</Text>
-      
-      <TextInput
-        placeholder="Correo Electronico"
-        placeholderTextColor="#FFFFFF"
-        style={styles.input}
-        selectionColor={'#ff6e38'}
-        fontSize={15}
-      />
-      
-      <TextInput
-        placeholder="Contraseña"
-        placeholderTextColor="#FFFFFF"
-        secureTextEntry
-        selectionColor={'#ff6e38'}
-        style={styles.input}
-        fontSize={15}
-      />
-
-      <Pressable style={styles.button}>
-        <Text style={styles.buttonText}>INICIAR SESIÓN</Text>
-      </Pressable>
-      <Pressable style={styles.button2}>
-        <Text style={styles.buttonText}>REGISTRESE AQUÍ</Text>
-      </Pressable>
-      
-      <Text style={styles.text2}> ¿Olvidó su Contraseña?</Text>
-
-      <View style={styles.container2}>
-        <Pressable>
-          <View style={styles.button_a}>
-            <Image source={require('./assets/facebook.png')} style={styles.img_apps} />
-            <Text style={styles.text_a}>Facebook</Text>
-          </View>
-        </Pressable>
-        <Pressable >
-          <View style={styles.button_a}>
-            <Image source={require('./assets/google.png')} style={styles.img_apps} />
-            <Text style={styles.text_a}>Google</Text>
-          </View>
-        </Pressable>
-      </View>
-
-    </ImageBackground>
   );
 }
 
@@ -59,90 +134,13 @@ export default  App
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: 'white',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-around'
   },
-  container2: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    
+  imageContainer: {
+    width: '100%', 
+    height: '100%'
   },
-  input: {
-    height: '5%',
-    borderColor: '#e6e6e6',
-    borderBottomWidth: 1,
-    color: 'white',
-    marginBottom: 20,
-    width: '50%',
-    padding: 10,
-  },
-  logo: {
-    width: '40%',
-    height: '15%',
-    resizeMode: 'contain',
-    marginBottom: 10,
-  },
-  text: {
-    textAlign: 'center',
-    fontSize: 50,
-    fontWeight: 'bold',
-    color: 'white',
-    marginBottom: '5%',
-  },
-  text2: {
-    textAlign: 'center',
-    color: 'white',
-    marginTop: 20,
-    fontSize: 15,
-  },
-  button:({ pressed }) => [
-  {
-    
-    backgroundColor: pressed ? '#ff6e38' : '#FF5722',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 10,
-    width: '60%',
-    alignItems: 'center',
-  }],
-  button2:({ pressed }) => [
-    {
-    alignItems: 'center',
-    padding: 10,
-    borderRadius: 5,
-    borderColor: pressed ? '#ff6e38' : '#FF5722',
-    borderWidth: 1,
-    marginTop: 10,
-    width: '60%',
-    alignItems: 'center',
-  }],
-  buttonText: {
-    color: '#fff',
-    fontSize: 15,
-  },
-  img_apps: {
-    width: 35,
-    height: 35,
-    margin: 5,
-    resizeMode: 'contain',
-  },
-  button_a: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    borderWidth: 1,
-    borderColor: '#FF5722',
-    marginTop: 55,
-    borderRadius: 10,
-    width: 140,
-    height: 50, 
-    margin: 5, 
-  },
-  text_a: {
-    fontSize: 15,
-    color: 'white',
-
-  },
+  
 });
