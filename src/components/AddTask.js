@@ -32,7 +32,7 @@ const AddTask = ({taskTitle, onHandlerTitle, taskDescription, onHandlerDescripti
               <TouchableOpacity onPress={incrementDescription}>
                 <Text style={{ fontSize: 36, textAlign: 'center' }}>+</Text>
               </TouchableOpacity>
-              <TextInput 
+              <TextInput
                 value={taskDescription} 
                 onChangeText={onHandlerDescription}  
                 placeholder='0'

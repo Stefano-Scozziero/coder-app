@@ -10,8 +10,8 @@ const App = ()  => {
 
   const [modalVisible, setModalVisible] = useState(false)
   const [taskSelected, setTaskSelected] = useState({})
-  const [taskTitle, setTaskTitle] = useState("")
-  const [taskDescription, setTaskDescription] = useState("")
+  const [taskTitle, setTaskTitle] = useState("0")
+  const [taskDescription, setTaskDescription] = useState("0")
   const [tasks, setTasks] = useState([])
   const screenWidth = Dimensions.get('window').width
 
